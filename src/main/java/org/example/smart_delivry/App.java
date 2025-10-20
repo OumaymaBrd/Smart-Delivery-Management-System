@@ -1,5 +1,7 @@
 package org.example.smart_delivry;
 
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import org.example.smart_delivry.config.AppConfig;
 import org.example.smart_delivry.controller.MainController;
 import org.example.smart_delivry.service.HelloService;
@@ -14,5 +16,11 @@ public class App
         HelloService helloService = (HelloService) context.getBean("helloService");
         MainController controller = new MainController(helloService);
         controller.run();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
+
+        System.out.println("Connexion OK, tables créées si nécessaire.");
+
+        emf.close();
+
     }
 }

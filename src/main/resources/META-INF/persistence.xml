@@ -1,0 +1,21 @@
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             version="3.0">
+    <persistence-unit name="my-persistence-unit">
+        <class>org.example.smart_delivry.entity.User</class>
+        <class>org.example.smart_delivry.entity.Admin</class>
+        <class>org.example.smart_delivry.entity.Gestionnaire_logistique</class>
+        <class>org.example.smart_delivry.entity.Livreur</class>
+        <properties>
+
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/smart_delivery_db"/>
+            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="jakarta.persistence.jdbc.user" value="root"/>
+            <property name="jakarta.persistence.jdbc.password" value=""/>
+
+
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>
