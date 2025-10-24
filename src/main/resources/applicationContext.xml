@@ -11,7 +11,6 @@
            http://www.springframework.org/schema/tx
            http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <!-- Removed jpa:repositories - using traditional DAOs instead -->
 
     <!-- DataSource Configuration -->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -39,10 +38,8 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
-    <!-- Enable Transaction Management -->
-    <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <!-- Added DAO beans with EntityManager injection -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
 
     <!-- LivreurDao Bean -->
     <bean id="livreurDao" class="org.example.smart_delivry.dao.LivreurDao">
@@ -59,20 +56,20 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
-    <!-- Service Beans now inject DAOs instead of Repositories -->
 
-    <!-- Constructor Injection Example -->
+
+
     <bean id="livreurService" class="org.example.smart_delivry.service.LivreurService" scope="singleton">
         <constructor-arg ref="livreurDao"/>
     </bean>
 
-    <!-- Setter Injection Example -->
+
     <bean id="colisService" class="org.example.smart_delivry.service.ColisService" scope="prototype">
         <property name="colisDao" ref="colisDao"/>
         <property name="livreurDao" ref="livreurDao"/>
     </bean>
 
-    <!-- Utility Bean -->
+
     <bean id="deliveryValidator" class="org.example.smart_delivry.service.DeliveryValidator" scope="singleton"/>
 
 </beans>

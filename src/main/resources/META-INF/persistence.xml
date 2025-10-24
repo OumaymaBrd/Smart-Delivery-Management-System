@@ -15,7 +15,7 @@
         <!-- ORM XML Mapping File -->
         <mapping-file>META-INF/orm.xml</mapping-file>
 
-        <!-- Exclude unlisted classes -->
+
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>
