@@ -1,6 +1,7 @@
 package org.example.smart_delivry.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.example.smart_delivry.enums.StatutColis;
 
@@ -10,6 +11,7 @@ import org.example.smart_delivry.enums.StatutColis;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = "livreur")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Colis {
 
     private Long id;

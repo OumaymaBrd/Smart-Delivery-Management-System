@@ -1,5 +1,6 @@
 package org.example.smart_delivry.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = "colis")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Livreur {
 
     private Long id;
