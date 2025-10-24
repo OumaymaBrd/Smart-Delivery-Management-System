@@ -11,7 +11,7 @@
            http://www.springframework.org/schema/tx
            http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-
+    <!-- Removed jpa:repositories - using traditional DAOs instead -->
 
     <!-- DataSource Configuration -->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -42,7 +42,7 @@
     <!-- Enable Transaction Management -->
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-
+    <!-- Added DAO beans with EntityManager injection -->
 
     <!-- LivreurDao Bean -->
     <bean id="livreurDao" class="org.example.smart_delivry.dao.LivreurDao">

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/mvc
+           http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- Activation du scan des composants pour les controllers -->
+    <context:component-scan base-package="org.example.smart_delivry.controller"/>
+
+    <!-- Removed invalid forceLazyLoading property, using default Hibernate5Module configuration -->
+    <!-- Bean pour le module Hibernate5 de Jackson -->
+    <bean id="hibernate5Module" class="com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module"/>
+
+    <!-- Bean pour l'ObjectMapper avec le module Hibernate5 -->
+    <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
+        <property name="serializationInclusion">
+            <value type="com.fasterxml.jackson.annotation.JsonInclude.Include">NON_NULL</value>
+        </property>
+    </bean>
+
+    <!-- Enregistrement du module Hibernate5 dans l'ObjectMapper -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="objectMapper"/>
+        <property name="targetMethod" value="registerModule"/>
+        <property name="arguments">
+            <list>
+                <ref bean="hibernate5Module"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Activation des annotations MVC -->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <!-- Configuration du convertisseur JSON avec l'ObjectMapper personnalisé -->
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper" ref="objectMapper"/>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- Configuration CORS pour permettre les requêtes cross-origin -->
+    <mvc:cors>
+        <mvc:mapping path="/api/**"
+                     allowed-origins="*"
+                     allowed-methods="GET,POST,PUT,DELETE,OPTIONS"
+                     allowed-headers="*"
+                     allow-credentials="false"
+                     max-age="3600"/>
+    </mvc:cors>
+
+</beans>

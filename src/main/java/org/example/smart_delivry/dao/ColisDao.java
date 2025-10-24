@@ -13,7 +13,7 @@ public class ColisDao {
 
     private EntityManager entityManager;
 
-
+    // Setter injection for EntityManager
     public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }

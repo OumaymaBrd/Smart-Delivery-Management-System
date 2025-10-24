@@ -1,5 +1,6 @@
 package org.example.smart_delivry.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.example.smart_delivry.enums.StatutColis;
 
@@ -16,5 +17,7 @@ public class Colis {
     private String adresse;
     private Double poids;
     private StatutColis statut;
+
+    @JsonIgnore
     private Livreur livreur;
 }

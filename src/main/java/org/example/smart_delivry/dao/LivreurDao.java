@@ -11,7 +11,7 @@ public class LivreurDao {
 
     private EntityManager entityManager;
 
-
+    // Setter injection for EntityManager
     public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
@@ -44,7 +44,7 @@ public class LivreurDao {
 
     public List<Livreur> findAll() {
         TypedQuery<Livreur> query = entityManager.createQuery(
-                "SELECT l FROM Livreur l", Livreur.class);
+                "SELECT DISTINCT l FROM Livreur l LEFT JOIN FETCH l.colis", Livreur.class);
         return query.getResultList();
     }
 

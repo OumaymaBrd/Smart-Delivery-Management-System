@@ -30,7 +30,7 @@ public class LivreurService {
 
     @Transactional(readOnly = true)
     public Optional<Livreur> trouverLivreurParId(Long id) {
-        return livreurDao.findById(id);
+        return livreurDao.findByIdWithColis(id);
     }
 
     @Transactional(readOnly = true)
