@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+                 http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
+                 version="2.1">
+
+    <!-- Livreur Entity Mapping -->
+    <entity class="org.example.smart_delivry.entity.Livreur" name="Livreur">
+        <table name="livreurs"/>
+
+        <attributes>
+            <id name="id">
+                <column name="id"/>
+                <generated-value strategy="IDENTITY"/>
+            </id>
+
+            <basic name="nom">
+                <column name="nom" nullable="false"/>
+            </basic>
+
+            <basic name="prenom">
+                <column name="prenom" nullable="false"/>
+            </basic>
+
+            <basic name="vehicule">
+                <column name="vehicule" nullable="false"/>
+            </basic>
+
+            <basic name="telephone">
+                <column name="telephone" nullable="false" unique="true"/>
+            </basic>
+
+            <one-to-many name="colis" mapped-by="livreur" fetch="LAZY">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+        </attributes>
+    </entity>
+
+    <!-- Colis Entity Mapping -->
+    <entity class="org.example.smart_delivry.entity.Colis" name="Colis">
+        <table name="colis"/>
+
+        <attributes>
+            <id name="id">
+                <column name="id"/>
+                <generated-value strategy="IDENTITY"/>
+            </id>
+
+            <basic name="destinataire">
+                <column name="destinataire" nullable="false"/>
+            </basic>
+
+            <basic name="adresse">
+                <column name="adresse" nullable="false"/>
+            </basic>
+
+            <basic name="poids">
+                <column name="poids" nullable="false"/>
+            </basic>
+
+            <basic name="statut">
+                <column name="statut" nullable="false"/>
+                <enumerated>STRING</enumerated>
+            </basic>
+
+            <many-to-one name="livreur" fetch="LAZY">
+                <join-column name="livreur_id"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+</entity-mappings>

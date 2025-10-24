@@ -1,13 +1,24 @@
 package org.example.smart_delivry.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import lombok.*;
 
-@Entity
-public class Livreur extends User{
+import java.util.ArrayList;
+import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString(exclude = "colis")
+public class Livreur {
+
+    private Long id;
+    private String nom;
+    private String prenom;
     private String vehicule;
-    private String teliphone;
+    private String telephone;
 
+    @Builder.Default
+    private List<Colis> colis = new ArrayList<>();
 }

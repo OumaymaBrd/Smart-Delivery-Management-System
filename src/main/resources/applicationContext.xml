@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
+
+    <!-- DataSource Configuration -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/smart_delivery_db?createDatabaseIfNotExist=true&amp;useSSL=false&amp;serverTimezone=UTC"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+
+    <!-- EntityManagerFactory now uses persistence.xml configuration -->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="persistenceUnitName" value="smartDeliveryPU"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="showSql" value="true"/>
+                <property name="generateDdl" value="true"/>
+                <property name="database" value="MYSQL"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Transaction Manager -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <!-- Enable Transaction Management -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+
+    <!-- LivreurDao Bean -->
+    <bean id="livreurDao" class="org.example.smart_delivry.dao.LivreurDao">
+        <property name="entityManager" ref="entityManager"/>
+    </bean>
+
+    <!-- ColisDao Bean -->
+    <bean id="colisDao" class="org.example.smart_delivry.dao.ColisDao">
+        <property name="entityManager" ref="entityManager"/>
+    </bean>
+
+    <!-- Shared EntityManager Proxy -->
+    <bean id="entityManager" class="org.springframework.orm.jpa.support.SharedEntityManagerBean">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <!-- Service Beans now inject DAOs instead of Repositories -->
+
+    <!-- Constructor Injection Example -->
+    <bean id="livreurService" class="org.example.smart_delivry.service.LivreurService" scope="singleton">
+        <constructor-arg ref="livreurDao"/>
+    </bean>
+
+    <!-- Setter Injection Example -->
+    <bean id="colisService" class="org.example.smart_delivry.service.ColisService" scope="prototype">
+        <property name="colisDao" ref="colisDao"/>
+        <property name="livreurDao" ref="livreurDao"/>
+    </bean>
+
+    <!-- Utility Bean -->
+    <bean id="deliveryValidator" class="org.example.smart_delivry.service.DeliveryValidator" scope="singleton"/>
+
+</beans>
