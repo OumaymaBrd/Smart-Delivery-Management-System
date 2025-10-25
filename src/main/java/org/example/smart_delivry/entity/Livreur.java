@@ -10,7 +10,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @ToString(exclude = "colis")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Livreur {
@@ -21,6 +20,5 @@ public class Livreur {
     private String vehicule;
     private String telephone;
 
-    @Builder.Default
-    private List<Colis> colis = new ArrayList<>();
+    private List<Colis> colis;
 }

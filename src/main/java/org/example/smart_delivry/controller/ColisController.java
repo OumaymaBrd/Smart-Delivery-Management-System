@@ -84,12 +84,12 @@ public class ColisController {
 
     /**
      * PATCH /colis/{id}/statut - Mettre à jour le statut d'un colis
-     * Body: { "statut": "EN_COURS" }
+     * Query param: statut=EN_COURS
      */
     @PatchMapping("/{id}/statut")
-    public ResponseEntity<Colis> updateStatut(@PathVariable Long id, @RequestBody StatutRequest request) {
+    public ResponseEntity<Colis> updateStatut(@PathVariable Long id, @RequestParam StatutColis statut) {
         try {
-            Colis colis = colisService.mettreAJourStatut(id, request.getStatut());
+            Colis colis = colisService.mettreAJourStatut(id, statut);
             return ResponseEntity.ok(colis);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

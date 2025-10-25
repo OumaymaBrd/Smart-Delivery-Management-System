@@ -6,16 +6,56 @@ Système de gestion de livraisons pour **SmartLogi** utilisant **Spring Core ave
 
 ## 📋 Table des Matières
 
+- [Prérequis et Extensions](#-prérequis-et-extensions)
 - [Vue d'ensemble](#-vue-densemble)
 - [Technologies](#-technologies)
-- [Architecture](#-architecture)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Lancement](#-lancement)
-- [API REST Documentation](#-api-rest-documentation)
+- [Diagramme de Classes UML](#-diagramme-de-classes-uml)
+- [Architecture du Projet](#-architecture-du-projet)
 - [Spring Core - Configuration XML](#-spring-core---configuration-xml)
-- [Spring MVC - REST API](#-spring-mvc---rest-api)
+- [API REST Documentation](#-api-rest-documentation)
+- [Installation et Configuration](#-installation-et-configuration)
+- [Lancement du Serveur](#-lancement-du-serveur)
+- [Tests avec Apidog](#-tests-avec-apidog)
 - [Structure du Projet](#-structure-du-projet)
+- [Dépannage](#-dépannage)
+
+---
+
+## 🔧 Prérequis et Extensions
+
+### Outils Requis
+
+| Outil | Version | Description |
+|-------|---------|-------------|
+| **Java JDK** | 17+ | Environnement d'exécution Java |
+| **Maven** | 3.6+ | Gestionnaire de dépendances et build |
+| **MySQL** | 8.0+ | Base de données relationnelle |
+| **Tomcat** | 7.0+ | Serveur d'application (inclus via Maven plugin) |
+
+### Extensions IDE Recommandées
+
+#### Pour IntelliJ IDEA
+- **Spring Core** - Support Spring Framework
+- **Spring MVC** - Support Spring Web MVC
+- **JPA Buddy** - Assistance JPA/Hibernate
+- **Lombok** - Support annotations Lombok
+- **Database Navigator** - Gestion bases de données
+
+#### Pour VS Code
+- **Extension Pack for Java** (Microsoft)
+- **Spring Boot Extension Pack** (Pivotal)
+- **Lombok Annotations Support**
+- **XML Tools** - Édition fichiers XML Spring
+- **REST Client** - Tests API REST
+
+#### Pour Eclipse
+- **Spring Tools 4** (STS)
+- **Lombok** (installer via jar)
+- **JPA Tools** (Dali)
+- **Maven Integration** (m2e)
+
+
+**Note importante** : Ce projet utilise `javax.persistence` (JPA 2.2) et non `jakarta.persistence` (JPA 3.0+) pour compatibilité avec Spring 5.x et Hibernate 5.x.
 
 ---
 
@@ -32,14 +72,14 @@ Ce projet est un système de gestion de livraisons qui permet de gérer des **li
 - ✅ API REST pour toutes les opérations
 - ✅ Configuration XML pure (Spring Core)
 - ✅ Validation des données métier
-- ✅ Gestion des transactions
+- ✅ Gestion des transactions déclaratives
 
 ---
 
 ## 🛠 Technologies
 
 ### Backend
-- **Java 8**
+- **Java 17**
 - **Spring Framework 5.3.31** (Core, Context, TX, ORM, Web MVC)
 - **Spring Data JPA 2.7.18**
 - **Hibernate 5.6.15.Final** (JPA Provider)
@@ -50,359 +90,250 @@ Ce projet est un système de gestion de livraisons qui permet de gérer des **li
 - **Lombok** (Réduction du code boilerplate)
 - **Jackson** (Sérialisation/Désérialisation JSON)
 - **Tomcat 7** (Serveur d'application)
+- **Apidog** (Tests API REST)
 
 ---
 
-## 🏗 Architecture
+## 📊 Diagramme de Classes UML
 
-Le projet suit une **architecture en couches** avec séparation des responsabilités :
+Le diagramme ci-dessous illustre la structure complète du système avec les entités, les relations, et les couches architecturales.
+
+![Diagramme de Classes](view/diagramme_classe.png)
+
+### Description du Diagramme
+
+#### Entités Principales
+
+**Livreur**
+- Représente un livreur avec ses informations personnelles
+- Attributs : id, nom, prenom, vehicule, telephone
+- Relation : Un livreur peut avoir plusieurs colis (One-to-Many)
+
+**Colis**
+- Représente un colis à livrer
+- Attributs : id, destinataire, adresse, poids, statut
+- Relation : Un colis appartient à un seul livreur (Many-to-One)
+
+**StatutColis (Enum)**
+- Énumération des statuts possibles d'un colis
+- Valeurs : PREPARATION, EN_COURS, LIVRE, ANNULE
+
+#### Relations
 
 \`\`\`
-┌─────────────────────────────────────────┐
-│         REST Controllers                │  ← Spring MVC
-│  (LivreurController, ColisController)   │
-└─────────────────┬───────────────────────┘
-│
-┌─────────────────▼───────────────────────┐
-│            Services                     │  ← Logique métier
-│  (LivreurService, ColisService)         │
-└─────────────────┬───────────────────────┘
-│
-┌─────────────────▼───────────────────────┐
-│              DAOs                       │  ← Accès aux données
-│  (LivreurDao, ColisDao)                 │
-└─────────────────┬───────────────────────┘
-│
-┌─────────────────▼───────────────────────┐
-│         Entities (JPA)                  │  ← Modèle de données
-│  (Livreur, Colis, StatutColis)          │
-└─────────────────┬───────────────────────┘
-│
-┌─────────────────▼───────────────────────┐
-│          MySQL Database                 │
-└─────────────────────────────────────────┘
+Livreur "1" ←──→ "0..*" Colis
 \`\`\`
 
-### Couches
+- **Cardinalité** : Un livreur peut avoir zéro ou plusieurs colis
+- **Type** : Bidirectionnelle (navigable des deux côtés)
+- **Cascade** : Les opérations sur Livreur peuvent se propager aux Colis
+- **Lazy Loading** : Les colis sont chargés à la demande
 
-1. **Controllers** : Exposent les endpoints REST et gèrent les requêtes HTTP
-2. **Services** : Contiennent la logique métier et orchestrent les DAOs
-3. **DAOs** : Gèrent l'accès aux données via EntityManager
-4. **Entities** : Représentent les tables de la base de données (POJOs)
 
----
 
-## 📥 Installation
+### Responsabilités des Couches
 
-### Prérequis
-
-- **Java 8+** installé
-- **Maven 3.6+** installé
-- **MySQL 8.0+** installé et en cours d'exécution
-- **Git** (optionnel)
-
-### Étapes
-
-1. **Cloner le projet** (ou télécharger le ZIP)
-   \`\`\`bash
-   git clone <repository-url>
-   cd smart_delivry_management
-   \`\`\`
-
-2. **Créer la base de données MySQL**
-   \`\`\`sql
-   CREATE DATABASE smart_delivery_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   \`\`\`
-
-3. **Créer les tables** (optionnel - Hibernate peut les créer automatiquement)
-   \`\`\`sql
-   USE smart_delivery_db;
-
-CREATE TABLE livreur (
-id BIGINT AUTO_INCREMENT PRIMARY KEY,
-nom VARCHAR(100) NOT NULL,
-prenom VARCHAR(100) NOT NULL,
-vehicule VARCHAR(50),
-telephone VARCHAR(20) UNIQUE NOT NULL
-);
-
-CREATE TABLE colis (
-id BIGINT AUTO_INCREMENT PRIMARY KEY,
-reference VARCHAR(50) UNIQUE NOT NULL,
-poids DOUBLE NOT NULL,
-destination VARCHAR(255) NOT NULL,
-statut VARCHAR(20) NOT NULL,
-livreur_id BIGINT,
-FOREIGN KEY (livreur_id) REFERENCES livreur(id)
-);
-\`\`\`
-
----
-
-## ⚙️ Configuration
-
-### 1. Configuration de la base de données
-
-Modifiez `src/main/resources/META-INF/persistence.xml` :
-
-\`\`\`xml
-<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/smart_delivery_db"/>
-<property name="javax.persistence.jdbc.user" value="root"/>
-<property name="javax.persistence.jdbc.password" value="VOTRE_MOT_DE_PASSE"/>
-\`\`\`
-
-### 2. Configuration Hibernate
-
-Le fichier `persistence.xml` contient également la configuration Hibernate :
-- **Dialect** : MySQL57Dialect
-- **DDL Auto** : `update` (crée/met à jour les tables automatiquement)
-- **Show SQL** : `true` (affiche les requêtes SQL dans les logs)
-
----
-
-## 🚀 Lancement
-
-### Option 1 : Lancer avec Maven Tomcat Plugin (Recommandé)
-
-\`\`\`bash
-# Compiler et lancer le serveur Tomcat
-mvn clean tomcat7:run
-\`\`\`
-
-Le serveur démarre sur **http://localhost:8080/smart-delivery**
-
-### Option 2 : Déployer sur Tomcat externe
-
-\`\`\`bash
-# Créer le fichier WAR
-mvn clean package
-
-# Copier le WAR dans Tomcat
-cp target/smart-delivery.war $TOMCAT_HOME/webapps/
-
-# Démarrer Tomcat
-$TOMCAT_HOME/bin/startup.sh
-\`\`\`
-
-### Vérification
-
-Accédez à : **http://localhost:8080/smart-delivery/api/livreurs**
-
-Vous devriez voir une liste JSON (vide au début).
-
----
-
-## 📡 API REST Documentation
-
-### Base URL
-\`\`\`
-http://localhost:8080/smart-delivery/api
-\`\`\`
-
----
-
-### 👤 Endpoints Livreurs
-
-#### 1. Lister tous les livreurs
-\`\`\`bash
-GET /livreurs
-
-curl http://localhost:8080/smart-delivery/api/livreurs
-\`\`\`
-
-**Réponse** :
-\`\`\`json
-[
-{
-"id": 1,
-"nom": "Alami",
-"prenom": "Mohammed",
-"vehicule": "Scooter",
-"telephone": "0612345678",
-"colis": [
-{
-"id": 1,
-"reference": "COL001",
-"poids": 2.5,
-"destination": "Casablanca",
-"statut": "EN_COURS"
-}
-]
-}
-]
-\`\`\`
-
-#### 2. Récupérer un livreur par ID
-\`\`\`bash
-GET /livreurs/{id}
-
-curl http://localhost:8080/smart-delivery/api/livreurs/1
-\`\`\`
-
-#### 3. Créer un nouveau livreur
-\`\`\`bash
-POST /livreurs
-Content-Type: application/json
-
-curl -X POST http://localhost:8080/smart-delivery/api/livreurs \
--H "Content-Type: application/json" \
--d '{
-"nom": "Bennani",
-"prenom": "Fatima",
-"vehicule": "Voiture",
-"telephone": "0698765432"
-}'
-\`\`\`
-
-**⚠️ Important** : Ne pas inclure `id` ou `colis` lors de la création.
-
-#### 4. Modifier un livreur
-\`\`\`bash
-PUT /livreurs/{id}
-Content-Type: application/json
-
-curl -X PUT http://localhost:8080/smart-delivery/api/livreurs/1 \
--H "Content-Type: application/json" \
--d '{
-"nom": "Alami",
-"prenom": "Mohammed",
-"vehicule": "Moto",
-"telephone": "0612345678"
-}'
-\`\`\`
-
-#### 5. Supprimer un livreur
-\`\`\`bash
-DELETE /livreurs/{id}
-
-curl -X DELETE http://localhost:8080/smart-delivery/api/livreurs/1
-\`\`\`
-
----
-
-### 📦 Endpoints Colis
-
-#### 1. Lister tous les colis
-\`\`\`bash
-GET /colis
-
-curl http://localhost:8080/smart-delivery/api/colis
-\`\`\`
-
-#### 2. Récupérer un colis par ID
-\`\`\`bash
-GET /colis/{id}
-
-curl http://localhost:8080/smart-delivery/api/colis/1
-\`\`\`
-
-#### 3. Créer un nouveau colis
-\`\`\`bash
-POST /colis
-Content-Type: application/json
-
-curl -X POST http://localhost:8080/smart-delivery/api/colis \
--H "Content-Type: application/json" \
--d '{
-"reference": "COL001",
-"poids": 2.5,
-"destination": "Casablanca",
-"statut": "PREPARATION",
-"livreur": {
-"id": 1
-}
-}'
-\`\`\`
-
-**⚠️ Important** : Pour assigner un livreur, incluez uniquement son `id` dans l'objet `livreur`.
-
-#### 4. Modifier un colis
-\`\`\`bash
-PUT /colis/{id}
-Content-Type: application/json
-
-curl -X PUT http://localhost:8080/smart-delivery/api/colis/1 \
--H "Content-Type: application/json" \
--d '{
-"reference": "COL001",
-"poids": 3.0,
-"destination": "Rabat",
-"statut": "EN_COURS",
-"livreur": {
-"id": 1
-}
-}'
-\`\`\`
-
-#### 5. Mettre à jour le statut d'un colis
-\`\`\`bash
-PATCH /colis/{id}/statut?statut=LIVRE
-
-curl -X PATCH "http://localhost:8080/smart-delivery/api/colis/1/statut?statut=LIVRE"
-\`\`\`
-
-**Statuts disponibles** : `PREPARATION`, `EN_COURS`, `LIVRE`, `ANNULE`
-
-#### 6. Lister les colis d'un livreur
-\`\`\`bash
-GET /colis/livreur/{livreurId}
-
-curl http://localhost:8080/smart-delivery/api/colis/livreur/1
-\`\`\`
-
-#### 7. Supprimer un colis
-\`\`\`bash
-DELETE /colis/{id}
-
-curl -X DELETE http://localhost:8080/smart-delivery/api/colis/1
-\`\`\`
+| Couche | Responsabilité | Technologies |
+|--------|----------------|--------------|
+| **Presentation** | Gestion des requêtes HTTP, sérialisation JSON | Spring MVC, Jackson |
+| **Métier** | Logique applicative, validation, transactions | Spring Core, Services |
+| **Accès Données** | Opérations CRUD, requêtes JPQL | Spring Data JPA, DAOs |
+| **Persistance** | Mapping objet-relationnel, gestion sessions | Hibernate, JPA |
+| **Base de Données** | Stockage persistant des données | MySQL |
 
 ---
 
 ## 🌱 Spring Core - Configuration XML
 
-### Principe
+### Principe Fondamental
 
 Ce projet utilise **Spring Core avec configuration XML pure**, sans aucune annotation de stéréotype (@Component, @Service, @Repository). Toute la configuration des beans et l'injection de dépendances sont définies dans les fichiers XML.
 
-### Fichiers de configuration
+### Fichiers de Configuration
 
-#### 1. `applicationContext.xml`
-Configuration principale Spring Core :
-- DataSource (connexion MySQL)
-- EntityManagerFactory (JPA/Hibernate)
-- TransactionManager (gestion des transactions)
-- Beans des DAOs, Services, et Validators
+#### 1. `applicationContext.xml` - Configuration Spring Core
 
-#### 2. `persistence.xml`
-Configuration JPA standard :
-- Persistence Unit "smartDeliveryPU"
-- Propriétés Hibernate
-- Référence au fichier `orm.xml`
+\`\`\`xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:tx="http://www.springframework.org/schema/tx"
+xsi:schemaLocation="...">
 
-#### 3. `orm.xml`
-Mappings JPA en XML (sans annotations @Entity, @Table, etc.) :
-- Définition des entités Livreur et Colis
-- Relations one-to-many et many-to-one
-- Colonnes et contraintes
+    <!-- DataSource - Connexion MySQL -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/smart_delivery_db"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+
+    <!-- EntityManagerFactory - JPA/Hibernate -->
+    <bean id="entityManagerFactory" 
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="persistenceUnitName" value="smartDeliveryPU"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+        </property>
+    </bean>
+
+    <!-- TransactionManager - Gestion des transactions -->
+    <bean id="transactionManager" 
+          class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <!-- Activation des transactions déclaratives -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- EntityManager partagé pour les DAOs -->
+    <bean id="entityManager" 
+          class="org.springframework.orm.jpa.support.SharedEntityManagerBean">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <!-- DAOs - Injection de l'EntityManager -->
+    <bean id="livreurDao" class="org.example.smart_delivry.dao.LivreurDao">
+        <property name="entityManager" ref="entityManager"/>
+    </bean>
+
+    <bean id="colisDao" class="org.example.smart_delivry.dao.ColisDao">
+        <property name="entityManager" ref="entityManager"/>
+    </bean>
+
+    <!-- Services - Injection des DAOs -->
+    <bean id="livreurService" 
+          class="org.example.smart_delivry.service.LivreurService">
+        <constructor-arg ref="livreurDao"/>
+    </bean>
+
+    <bean id="colisService" 
+          class="org.example.smart_delivry.service.ColisService" 
+          scope="prototype">
+        <property name="colisDao" ref="colisDao"/>
+        <property name="livreurDao" ref="livreurDao"/>
+    </bean>
+
+    <!-- Validator -->
+    <bean id="deliveryValidator" 
+          class="org.example.smart_delivry.service.DeliveryValidator"/>
+
+</beans>
+\`\`\`
+
+#### 2. `persistence.xml` - Configuration JPA
+
+\`\`\`xml
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.2">
+    <persistence-unit name="smartDeliveryPU" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Référence au fichier de mappings XML -->
+        <mapping-file>META-INF/orm.xml</mapping-file>
+        
+        <properties>
+            <!-- Hibernate properties -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+\`\`\`
+
+#### 3. `orm.xml` - Mappings JPA en XML
+
+\`\`\`xml
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm" version="2.2">
+
+    <!-- Entité Livreur -->
+    <entity class="org.example.smart_delivry.entity.Livreur">
+        <table name="livreur"/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="IDENTITY"/>
+            </id>
+            <basic name="nom">
+                <column name="nom" nullable="false"/>
+            </basic>
+            <basic name="prenom">
+                <column name="prenom" nullable="false"/>
+            </basic>
+            <basic name="vehicule"/>
+            <basic name="telephone">
+                <column name="telephone" unique="true" nullable="false"/>
+            </basic>
+            <one-to-many name="colis" mapped-by="livreur" fetch="LAZY">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+        </attributes>
+    </entity>
+
+    <!-- Entité Colis -->
+    <entity class="org.example.smart_delivry.entity.Colis">
+        <table name="colis"/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="IDENTITY"/>
+            </id>
+            <basic name="destinataire">
+                <column name="destinataire" nullable="false"/>
+            </basic>
+            <basic name="adresse">
+                <column name="adresse" nullable="false"/>
+            </basic>
+            <basic name="poids">
+                <column name="poids" nullable="false"/>
+            </basic>
+            <basic name="statut">
+                <column name="statut" nullable="false"/>
+                <enumerated>STRING</enumerated>
+            </basic>
+            <many-to-one name="livreur" fetch="LAZY">
+                <join-column name="livreur_id"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+
+</entity-mappings>
+\`\`\`
 
 ### Types d'Injection de Dépendances
 
-Le projet démontre les **3 types d'injection** supportés par Spring :
+#### 1. Constructor Injection (Recommandé)
 
-#### 1. **Constructor Injection** (Recommandé)
 \`\`\`xml
 <bean id="livreurService" class="org.example.smart_delivry.service.LivreurService">
 <constructor-arg ref="livreurDao"/>
 </bean>
 \`\`\`
 
+\`\`\`java
+public class LivreurService {
+private final LivreurDao livreurDao;
+
+    // Injection par constructeur
+    public LivreurService(LivreurDao livreurDao) {
+        this.livreurDao = livreurDao;
+    }
+}
+\`\`\`
+
 **Avantages** :
-- Immutabilité des dépendances
+- Immutabilité des dépendances (final)
 - Dépendances obligatoires garanties
 - Facilite les tests unitaires
+- Évite les NullPointerException
 
-#### 2. **Setter Injection**
+#### 2. Setter Injection
+
 \`\`\`xml
 <bean id="colisService" class="org.example.smart_delivry.service.ColisService">
 <property name="colisDao" ref="colisDao"/>
@@ -410,12 +341,26 @@ Le projet démontre les **3 types d'injection** supportés par Spring :
 </bean>
 \`\`\`
 
-**Avantages** :
-- Dépendances optionnelles
-- Reconfiguration possible après création
+\`\`\`java
+public class ColisService {
+private ColisDao colisDao;
+private LivreurDao livreurDao;
 
-#### 3. **Field Injection**
-Non utilisé dans ce projet car nécessite des annotations (@Autowired).
+    // Injection par setter
+    public void setColisDao(ColisDao colisDao) {
+        this.colisDao = colisDao;
+    }
+    
+    public void setLivreurDao(LivreurDao livreurDao) {
+        this.livreurDao = livreurDao;
+    }
+}
+\`\`\`
+
+**Avantages** :
+- Dépendances optionnelles possibles
+- Reconfiguration après création
+- Flexibilité pour les dépendances circulaires
 
 ### Scopes des Beans
 
@@ -427,10 +372,10 @@ Non utilisé dans ce projet car nécessite des annotations (@Autowired).
 <bean id="colisService" class="..." scope="prototype"/>
 \`\`\`
 
-**Scopes utilisés** :
-- `livreurService` : **singleton** (une seule instance)
-- `colisService` : **prototype** (nouvelle instance à chaque appel)
-- `deliveryValidator` : **singleton**
+| Scope | Description | Utilisation |
+|-------|-------------|-------------|
+| **singleton** | Une seule instance pour tout le conteneur | Services stateless, DAOs |
+| **prototype** | Nouvelle instance à chaque demande | Services stateful, objets temporaires |
 
 ### Gestion des Transactions
 
@@ -439,106 +384,128 @@ Les transactions sont gérées de manière **déclarative** via XML :
 \`\`\`xml
 <tx:advice id="txAdvice" transaction-manager="transactionManager">
 <tx:attributes>
+<!-- Méthodes d'écriture : transaction requise -->
 <tx:method name="enregistrer*" propagation="REQUIRED"/>
 <tx:method name="modifier*" propagation="REQUIRED"/>
 <tx:method name="supprimer*" propagation="REQUIRED"/>
-<tx:method name="trouver*" read-only="true"/>
-<tx:method name="lister*" read-only="true"/>
-</tx:attributes>
+
+        <!-- Méthodes de lecture : optimisation read-only -->
+        <tx:method name="trouver*" read-only="true"/>
+        <tx:method name="lister*" read-only="true"/>
+    </tx:attributes>
 </tx:advice>
+
+<aop:config>
+<aop:pointcut id="serviceMethods"
+expression="execution(* org.example.smart_delivry.service.*.*(..))"/>
+<aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethods"/>
+</aop:config>
 \`\`\`
 
 **Propagation** :
-- `REQUIRED` : Crée une transaction si elle n'existe pas
-- `read-only="true"` : Optimisation pour les lectures
+- `REQUIRED` : Crée une transaction si elle n'existe pas, sinon rejoint l'existante
+- `read-only="true"` : Optimisation pour les opérations de lecture seule
 
 ---
 
-## 🌐 Spring MVC - REST API
+## 📡 API REST Documentation
 
-### Principe
-
-Spring MVC expose les services métier sous forme d'**API REST** avec sérialisation JSON automatique.
-
-### Configuration
-
-#### 1. `web.xml`
-Configuration du servlet container :
-- DispatcherServlet (point d'entrée Spring MVC)
-- Mapping `/api/*` pour les endpoints REST
-- Chargement du contexte Spring Core
-
-\`\`\`xml
-<servlet>
-<servlet-name>dispatcher</servlet-name>
-<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-</servlet>
-
-<servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/api/*</url-pattern>
-</servlet-mapping>
+### Base URL
+\`\`\`
+http://localhost:8080/smart-delivery/api
 \`\`\`
 
-#### 2. `dispatcher-servlet.xml`
-Configuration Spring MVC :
-- Component scan des contrôleurs
-- Message converters (Jackson pour JSON)
-- Hibernate5Module (gestion des lazy collections)
+![API Documentation](view/Api-Documentation.png)
 
-\`\`\`xml
-<context:component-scan base-package="org.example.smart_delivry.controller"/>
+## 🚀 Lancement du Serveur
 
-<mvc:annotation-driven>
-<mvc:message-converters>
-<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-<property name="objectMapper" ref="objectMapper"/>
-</bean>
-</mvc:message-converters>
-</mvc:annotation-driven>
+### Option 1 : Maven Tomcat Plugin (Recommandé)
+\`\`\`bash
+mvn clean tomcat7:run
 \`\`\`
 
-### Contrôleurs REST
+Le serveur démarre sur **http://localhost:8080/smart-delivery**
 
-Les contrôleurs utilisent les annotations Spring MVC :
+### Option 2 : Déployer sur Tomcat externe
+\`\`\`bash
+# Créer le fichier WAR
+mvn clean package
 
-\`\`\`java
-@RestController
-@RequestMapping("/livreurs")
-public class LivreurController {
+# Copier dans Tomcat
+cp target/smart-delivery.war $TOMCAT_HOME/webapps/
 
-    private final LivreurService livreurService;
-    
-    @GetMapping
-    public ResponseEntity<List<Livreur>> getAllLivreurs() {
-        return ResponseEntity.ok(livreurService.listerTousLesLivreurs());
-    }
-    
-    @PostMapping
-    public ResponseEntity<Livreur> createLivreur(@RequestBody Livreur livreur) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(livreurService.enregistrerLivreur(livreur));
-    }
+# Démarrer Tomcat
+$TOMCAT_HOME/bin/startup.sh
+\`\`\`
+
+### Vérification
+\`\`\`bash
+curl http://localhost:8080/smart-delivery/api/livreurs
+\`\`\`
+
+---
+
+## 🧪 Tests avec Apidog
+
+### Installation d'Apidog
+
+1. Téléchargez Apidog depuis [apidog.com](https://apidog.com)
+2. Installez l'application
+3. Créez un nouveau projet "Smart Delivery Management"
+
+### Configuration dans Apidog
+
+#### 1. Créer un environnement
+
+- **Nom** : Local Development
+- **Base URL** : `http://localhost:8080/smart-delivery/api`
+
+#### 2. Importer les endpoints
+
+Créez les endpoints suivants dans Apidog :
+
+**Livreurs**
+- `GET` `/livreurs` - Liste tous les livreurs
+- `GET` `/livreurs/{id}` - Récupérer un livreur
+- `POST` `/livreurs` - Créer un livreur
+- `PUT` `/livreurs/{id}` - Modifier un livreur
+- `DELETE` `/livreurs/{id}` - Supprimer un livreur
+
+**Colis**
+- `GET` `/colis` - Liste tous les colis
+- `GET` `/colis/{id}` - Récupérer un colis
+- `POST` `/colis` - Créer un colis
+- `PUT` `/colis/{id}` - Modifier un colis
+- `PATCH` `/colis/{id}/statut` - Mettre à jour le statut
+- `GET` `/colis/livreur/{livreurId}` - Colis d'un livreur
+- `DELETE` `/colis/{id}` - Supprimer un colis
+
+#### 3. Exemple de test POST avec Apidog
+
+**Endpoint** : `POST /livreurs`
+
+**Headers** :
+\`\`\`
+Content-Type: application/json
+\`\`\`
+
+**Body (JSON)** :
+\`\`\`json
+{
+"nom": "Martin",
+"prenom": "Sophie",
+"vehicule": "Moto",
+"telephone": "0611223344"
 }
 \`\`\`
 
-### Sérialisation JSON
+**Réponse attendue** : `201 Created`
 
-**Jackson** gère automatiquement la conversion Java ↔ JSON :
+### Captures d'écran Apidog
 
-- `@JsonIgnore` : Ignore un champ lors de la sérialisation (évite les références circulaires)
-- `@JsonIgnoreProperties(ignoreUnknown = true)` : Ignore les champs JSON inconnus
-- `Hibernate5Module` : Gère les collections lazy-loaded Hibernate
+La capture d'écran ci-dessous montre l'interface Apidog avec tous les endpoints configurés :
 
-### Gestion des erreurs
-
-Les contrôleurs retournent des codes HTTP appropriés :
-- `200 OK` : Succès
-- `201 CREATED` : Ressource créée
-- `204 NO CONTENT` : Suppression réussie
-- `404 NOT FOUND` : Ressource introuvable
-- `400 BAD REQUEST` : Données invalides
-- `500 INTERNAL SERVER ERROR` : Erreur serveur
+![Apidog Interface](view/Api-Documentation.png)
 
 ---
 
@@ -550,106 +517,116 @@ smart_delivry_management/
 ├── src/
 │   ├── main/
 │   │   ├── java/org/example/smart_delivry/
-│   │   │   ├── controller/          # Contrôleurs REST (Spring MVC)
+│   │   │   ├── controller/              # Contrôleurs REST
 │   │   │   │   ├── LivreurController.java
 │   │   │   │   └── ColisController.java
 │   │   │   │
-│   │   │   ├── service/             # Services métier
+│   │   │   ├── service/                 # Services métier
 │   │   │   │   ├── LivreurService.java
 │   │   │   │   ├── ColisService.java
 │   │   │   │   └── DeliveryValidator.java
 │   │   │   │
-│   │   │   ├── dao/                 # DAOs (accès données)
+│   │   │   ├── dao/                     # DAOs
 │   │   │   │   ├── LivreurDao.java
 │   │   │   │   └── ColisDao.java
 │   │   │   │
-│   │   │   ├── entity/              # Entités JPA (POJOs)
+│   │   │   ├── entity/                  # Entités JPA
 │   │   │   │   ├── Livreur.java
 │   │   │   │   └── Colis.java
 │   │   │   │
-│   │   │   ├── enums/               # Énumérations
+│   │   │   ├── enums/                   # Énumérations
 │   │   │   │   └── StatutColis.java
 │   │   │   │
-│   │   │   └── App.java             # Classe principale (tests)
+│   │   │   └── App.java                 # Classe principale
 │   │   │
 │   │   ├── resources/
 │   │   │   ├── META-INF/
-│   │   │   │   ├── persistence.xml  # Configuration JPA
-│   │   │   │   └── orm.xml          # Mappings JPA XML
+│   │   │   │   ├── persistence.xml      # Configuration JPA
+│   │   │   │   └── orm.xml              # Mappings JPA XML
 │   │   │   │
-│   │   │   └── applicationContext.xml  # Configuration Spring Core
+│   │   │   └── applicationContext.xml   # Configuration Spring Core
 │   │   │
 │   │   └── webapp/
 │   │       └── WEB-INF/
-│   │           ├── web.xml          # Configuration Servlet
+│   │           ├── web.xml              # Configuration Servlet
 │   │           └── dispatcher-servlet.xml  # Configuration Spring MVC
 │   │
-│   └── test/                        # Tests unitaires (à implémenter)
+│   └── test/                            # Tests unitaires
 │
-├── pom.xml                          # Dépendances Maven
-├── README.md                        # Ce fichier
-├── LANCEMENT_SERVEUR.md            # Guide de lancement
-└── EXEMPLES_API.md                 # Exemples d'utilisation API
+├── view/                                # Ressources visuelles
+│   ├── diagramme_classe.png            # Diagramme UML
+│   └── Api-Documentation.png           # Capture Apidog
+│
+├── pom.xml                              # Dépendances Maven
+├── README.md                            # Ce fichier
+├── DIAGRAMME_CLASSES.md                # Documentation UML
+├── LANCEMENT_SERVEUR.md                # Guide de lancement
+└── EXEMPLES_API.md                     # Exemples d'utilisation
 \`\`\`
-
----
-
-## 🎓 Concepts Clés
-
-### Spring Core
-- ✅ **Inversion of Control (IoC)** : Spring gère le cycle de vie des objets
-- ✅ **Dependency Injection (DI)** : Les dépendances sont injectées par Spring
-- ✅ **Configuration XML** : Aucune annotation de stéréotype
-- ✅ **Scopes** : Singleton et Prototype
-- ✅ **Transactions déclaratives** : Gestion automatique des transactions
-
-### Spring MVC
-- ✅ **DispatcherServlet** : Front Controller pattern
-- ✅ **@RestController** : Contrôleurs REST
-- ✅ **@RequestMapping** : Mapping des URLs
-- ✅ **@RequestBody / @ResponseBody** : Sérialisation JSON automatique
-- ✅ **ResponseEntity** : Contrôle des réponses HTTP
-
-### JPA / Hibernate
-- ✅ **EntityManager** : API JPA standard
-- ✅ **JPQL** : Requêtes orientées objet
-- ✅ **Lazy Loading** : Chargement différé des relations
-- ✅ **Transactions** : ACID garanties
-- ✅ **Mappings XML** : Configuration sans annotations
 
 ---
 
 ## 🐛 Dépannage
 
-### Erreur : "EntityPathResolver must not be null"
-**Solution** : Vérifiez que vous utilisez Spring Data JPA 2.7.x (pas 3.x) avec Spring 5.3.x
-
-### Erreur : "LazyInitializationException"
-**Solution** : Le Hibernate5Module est configuré pour gérer les collections lazy. Vérifiez `dispatcher-servlet.xml`
+### Erreur : "Cannot find symbol: method builder()"
+**Cause** : Les entités utilisaient @Builder qui a été retiré  
+**Solution** : Utilisez les constructeurs et setters standards
 
 ### Erreur : HTTP 400 lors de POST
-**Solution** : Vérifiez que vous envoyez `Content-Type: application/json` et que le JSON est valide
+**Cause** : JSON invalide ou Content-Type manquant  
+**Solution** : Vérifiez le header `Content-Type: application/json` et la structure JSON
+
+### Erreur : HTTP 409 Conflict
+**Cause** : Violation de contrainte unique (ex: téléphone déjà existant)  
+**Solution** : Utilisez un numéro de téléphone différent
+
+### Erreur : LazyInitializationException
+**Cause** : Tentative d'accès à une collection lazy hors session  
+**Solution** : Le Hibernate5Module est configuré pour gérer ce cas
 
 ### Erreur : "package jakarta.persistence does not exist"
-**Solution** : Utilisez `javax.persistence` avec Hibernate 5.x (pas `jakarta.persistence`)
+**Cause** : Mauvaise version de JPA (3.0+ au lieu de 2.2)  
+**Solution** : Utilisez `javax.persistence` avec Hibernate 5.x
 
-### Erreur : Références circulaires JSON
-**Solution** : `@JsonIgnore` est configuré sur `Colis.livreur` pour éviter les cycles
+---
+
+## 🎓 Concepts Clés Démontrés
+
+### Spring Core
+- ✅ Inversion of Control (IoC)
+- ✅ Dependency Injection (Constructor & Setter)
+- ✅ Configuration XML pure
+- ✅ Bean Scopes (Singleton, Prototype)
+- ✅ Transactions déclaratives
+
+### Spring MVC
+- ✅ DispatcherServlet
+- ✅ @RestController
+- ✅ @RequestMapping
+- ✅ Sérialisation JSON automatique
+- ✅ Gestion des erreurs HTTP
+
+### JPA / Hibernate
+- ✅ EntityManager
+- ✅ JPQL
+- ✅ Lazy Loading
+- ✅ Mappings XML
+- ✅ Relations bidirectionnelles
 
 ---
 
 ## 📚 Ressources
 
-- [Spring Framework Documentation](https://docs.spring.io/spring-framework/docs/5.3.x/reference/html/)
-- [Spring Data JPA Documentation](https://docs.spring.io/spring-data/jpa/docs/2.7.x/reference/html/)
-- [Hibernate Documentation](https://docs.jboss.org/hibernate/orm/5.6/userguide/html_single/Hibernate_User_Guide.html)
-- [Jackson Documentation](https://github.com/FasterXML/jackson-docs)
+- [Spring Framework 5.3 Documentation](https://docs.spring.io/spring-framework/docs/5.3.x/reference/html/)
+- [Spring Data JPA 2.7 Documentation](https://docs.spring.io/spring-data/jpa/docs/2.7.x/reference/html/)
+- [Hibernate 5.6 User Guide](https://docs.jboss.org/hibernate/orm/5.6/userguide/html_single/Hibernate_User_Guide.html)
+- [Apidog Documentation](https://apidog.com/help/)
 
 ---
 
 ## 👨‍💻 Auteur
 
-Projet développé pour démontrer l'utilisation de **Spring Core avec configuration XML pure** et **Spring MVC REST API**.
+Projet développé par Oumayma Bramid pour démontrer l'utilisation de **Spring Core avec configuration XML pure** et **Spring MVC REST API**.
 
 ---
 

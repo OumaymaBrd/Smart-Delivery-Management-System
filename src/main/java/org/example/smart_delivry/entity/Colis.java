@@ -9,7 +9,6 @@ import org.example.smart_delivry.enums.StatutColis;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @ToString(exclude = "livreur")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Colis {
