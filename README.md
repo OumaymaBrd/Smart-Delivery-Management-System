@@ -1,15 +1,10 @@
-# 📦 Smart Delivery Management System
-
-Système de gestion de livraisons pour **SmartLogi** utilisant **Spring Core avec configuration XML pure** et **Spring MVC REST API**.
-
----
 ## 🔧 Prérequis et Technologies
 
 <div align="center">
 
 ### 💻 Technologies Utilisées
 
-<p align="center">
+<p >
   <img src="https://img.shields.io/badge/Java-17+-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java"/>
   <img src="https://img.shields.io/badge/Spring-5.3.31-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Spring"/>
   <img src="https://img.shields.io/badge/Hibernate-5.6.15-59666C?style=for-the-badge&logo=hibernate&logoColor=white" alt="Hibernate"/>
