@@ -52,6 +52,12 @@ Le diagramme ci-dessous illustre la structure complète du système avec les ent
 
 ---
 
+## 📊 Structure du Projet Presenter dans IntelliJ
+
+
+![Project View ](view/structure-project.png)
+
+---
 ## 🌱 Spring Core - 
 
 ### Principe Fondamental
