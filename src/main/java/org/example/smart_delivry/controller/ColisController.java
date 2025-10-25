@@ -22,18 +22,14 @@ public class ColisController {
         this.colisService = colisService;
     }
 
-    /**
-     * GET /colis - Récupérer tous les colis
-     */
+
     @GetMapping
     public ResponseEntity<List<Colis>> getAllColis() {
         List<Colis> colis = colisService.listerTousLesColis();
         return ResponseEntity.ok(colis);
     }
 
-    /**
-     * GET /colis/{id} - Récupérer un colis par ID
-     */
+
     @GetMapping("/{id}")
     public ResponseEntity<Colis> getColisById(@PathVariable Long id) {
         Optional<Colis> colis = colisService.trouverColisParId(id);
@@ -41,19 +37,14 @@ public class ColisController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * GET /colis/livreur/{livreurId} - Récupérer tous les colis d'un livreur
-     */
+
     @GetMapping("/livreur/{livreurId}")
     public ResponseEntity<List<Colis>> getColisByLivreur(@PathVariable Long livreurId) {
         List<Colis> colis = colisService.listerColisParLivreur(livreurId);
         return ResponseEntity.ok(colis);
     }
 
-    /**
-     * POST /colis - Créer un nouveau colis
-     * Body: { "destinataire": "...", "adresse": "...", "poids": 2.5, "livreurId": 1 }
-     */
+
     @PostMapping
     public ResponseEntity<Colis> createColis(@RequestBody ColisRequest request) {
         try {
@@ -69,9 +60,7 @@ public class ColisController {
         }
     }
 
-    /**
-     * PUT /colis/{id} - Modifier un colis existant
-     */
+
     @PutMapping("/{id}")
     public ResponseEntity<Colis> updateColis(@PathVariable Long id, @RequestBody Colis colis) {
         try {
@@ -96,9 +85,7 @@ public class ColisController {
         }
     }
 
-    /**
-     * DELETE /colis/{id} - Supprimer un colis
-     */
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteColis(@PathVariable Long id) {
         try {

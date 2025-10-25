@@ -1,2 +1,2 @@
-`mvn compile exec:java -Dexec.mainClass="org.example.smart_delivry.App"
-`
+mvn compile exec:java -Dexec.mainClass="org.example.smart_delivry.App" --Spring Core
+mvn clean tomcat7:run -- Spring MVC

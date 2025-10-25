@@ -21,18 +21,13 @@ public class LivreurController {
         this.livreurService = livreurService;
     }
 
-    /**
-     * GET /livreurs - Récupérer tous les livreurs
-     */
     @GetMapping
     public ResponseEntity<List<Livreur>> getAllLivreurs() {
         List<Livreur> livreurs = livreurService.listerTousLesLivreurs();
         return ResponseEntity.ok(livreurs);
     }
 
-    /**
-     * GET /livreurs/{id} - Récupérer un livreur par ID
-     */
+
     @GetMapping("/{id}")
     public ResponseEntity<Livreur> getLivreurById(@PathVariable Long id) {
         Optional<Livreur> livreur = livreurService.trouverLivreurParId(id);
@@ -40,9 +35,7 @@ public class LivreurController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * GET /livreurs/{id}/colis - Récupérer un livreur avec ses colis
-     */
+
     @GetMapping("/{id}/colis")
     public ResponseEntity<Livreur> getLivreurWithColis(@PathVariable Long id) {
         Optional<Livreur> livreur = livreurService.trouverLivreurAvecColis(id);
@@ -50,9 +43,7 @@ public class LivreurController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * POST /livreurs - Créer un nouveau livreur
-     */
+
     @PostMapping
     public ResponseEntity<Livreur> createLivreur(@RequestBody Livreur livreur) {
         try {
@@ -63,9 +54,7 @@ public class LivreurController {
         }
     }
 
-    /**
-     * PUT /livreurs/{id} - Modifier un livreur existant
-     */
+
     @PutMapping("/{id}")
     public ResponseEntity<Livreur> updateLivreur(@PathVariable Long id, @RequestBody Livreur livreur) {
         try {
@@ -76,9 +65,7 @@ public class LivreurController {
         }
     }
 
-    /**
-     * DELETE /livreurs/{id} - Supprimer un livreur
-     */
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLivreur(@PathVariable Long id) {
         try {
