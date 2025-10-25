@@ -5,15 +5,15 @@ Système de gestion de livraisons pour **SmartLogi** utilisant **Spring Core ave
 ---
 ## 🔧 Prérequis et Technologies
 
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" width="40"/> 
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/maven/maven-original.svg" width="40"/> 
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" width="40"/> 
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tomcat/tomcat-original.svg" width="40"/> 
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" width="40"/> 
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/hibernate/hibernate-original.svg" width="40"/> 
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/lombok/lombok-original.svg" width="40"/> 
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jackson/jackson-original.svg" width="40"/> 
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apidog/apidog-original.svg" width="40"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" width="40" style="vertical-align:middle; margin-right:5px;"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/maven/maven-original.svg" width="40" style="vertical-align:middle; margin-right:5px;"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" width="40" style="vertical-align:middle; margin-right:5px;"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tomcat/tomcat-original.svg" width="40" style="vertical-align:middle; margin-right:5px;"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" width="40" style="vertical-align:middle; margin-right:5px;"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/hibernate/hibernate-original.svg" width="40" style="vertical-align:middle; margin-right:5px;"/> 
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Lombok_logo.svg" width="40" style="vertical-align:middle; margin-right:5px;"/> 
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/48/Jackson_logo.svg" width="40" style="vertical-align:middle; margin-right:5px;"/> 
+<img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Apidog_logo.png" width="40" style="vertical-align:middle;"/>
 
 
 ## 📊 Diagramme de Classes UML
