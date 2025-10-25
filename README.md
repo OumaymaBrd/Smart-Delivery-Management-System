@@ -70,20 +70,12 @@ http://localhost:8080/smart-delivery/api
 
 ## 🚀 Lancement du Serveur
 
-### Option 1 : Maven Tomcat Plugin (Recommandé)
+###  Maven Tomcat Plugin (Recommandé)
 \`\`\`bash
 mvn clean tomcat7:run
 \`\`\`
 
 Le serveur démarre sur **http://localhost:8080/smart-delivery**
-
-### Option 2 : Déployer sur Tomcat externe
-\`\`\`bash
-# Créer le fichier WAR
-mvn clean package
-
-# Copier dans Tomcat
-cp target/smart-delivery.war $TOMCAT_HOME/webapps/
 
 # Démarrer Tomcat
 $TOMCAT_HOME/bin/startup.sh
@@ -97,14 +89,6 @@ curl http://localhost:8080/smart-delivery/api/livreurs
 ---
 
 ## 🧪 Tests avec Apidog
-
-### Installation d'Apidog
-
-1. Téléchargez Apidog depuis [apidog.com](https://apidog.com)
-2. Installez l'application
-3. Créez un nouveau projet "Smart Delivery Management"
-
-### Configuration dans Apidog
 
 #### 1. Créer un environnement
 
