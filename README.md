@@ -3,96 +3,18 @@
 Système de gestion de livraisons pour **SmartLogi** utilisant **Spring Core avec configuration XML pure** et **Spring MVC REST API**.
 
 ---
+## 🔧 Prérequis et Technologies
 
-## 📋 Table des Matières
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" width="40"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/maven/maven-original.svg" width="40"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" width="40"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tomcat/tomcat-original.svg" width="40"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" width="40"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/hibernate/hibernate-original.svg" width="40"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/lombok/lombok-original.svg" width="40"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jackson/jackson-original.svg" width="40"/> 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apidog/apidog-original.svg" width="40"/>
 
-- [Prérequis et Extensions](#-prérequis-et-extensions)
-- [Vue d'ensemble](#-vue-densemble)
-- [Technologies](#-technologies)
-- [Diagramme de Classes UML](#-diagramme-de-classes-uml)
-- [Architecture du Projet](#-architecture-du-projet)
-- [Spring Core - Configuration XML](#-spring-core---configuration-xml)
-- [API REST Documentation](#-api-rest-documentation)
-- [Installation et Configuration](#-installation-et-configuration)
-- [Lancement du Serveur](#-lancement-du-serveur)
-- [Tests avec Apidog](#-tests-avec-apidog)
-- [Structure du Projet](#-structure-du-projet)
-- [Dépannage](#-dépannage)
-
----
-
-## 🔧 Prérequis et Extensions
-
-### Outils Requis
-
-| Outil | Version | Description |
-|-------|---------|-------------|
-| **Java JDK** | 17+ | Environnement d'exécution Java |
-| **Maven** | 3.6+ | Gestionnaire de dépendances et build |
-| **MySQL** | 8.0+ | Base de données relationnelle |
-| **Tomcat** | 7.0+ | Serveur d'application (inclus via Maven plugin) |
-
-### Extensions IDE Recommandées
-
-#### Pour IntelliJ IDEA
-- **Spring Core** - Support Spring Framework
-- **Spring MVC** - Support Spring Web MVC
-- **JPA Buddy** - Assistance JPA/Hibernate
-- **Lombok** - Support annotations Lombok
-- **Database Navigator** - Gestion bases de données
-
-#### Pour VS Code
-- **Extension Pack for Java** (Microsoft)
-- **Spring Boot Extension Pack** (Pivotal)
-- **Lombok Annotations Support**
-- **XML Tools** - Édition fichiers XML Spring
-- **REST Client** - Tests API REST
-
-#### Pour Eclipse
-- **Spring Tools 4** (STS)
-- **Lombok** (installer via jar)
-- **JPA Tools** (Dali)
-- **Maven Integration** (m2e)
-
-
-**Note importante** : Ce projet utilise `javax.persistence` (JPA 2.2) et non `jakarta.persistence` (JPA 3.0+) pour compatibilité avec Spring 5.x et Hibernate 5.x.
-
----
-
-## 🎯 Vue d'ensemble
-
-Ce projet est un système de gestion de livraisons qui permet de gérer des **livreurs** et des **colis** avec leurs statuts. Il démontre l'utilisation de **Spring Core avec configuration XML pure** (sans annotations @Component, @Service, @Repository) et expose les opérations CRUD via une **API REST Spring MVC**.
-
-### Fonctionnalités
-
-- ✅ Gestion complète des livreurs (CRUD)
-- ✅ Gestion complète des colis (CRUD)
-- ✅ Assignation de colis aux livreurs
-- ✅ Mise à jour du statut des colis (PREPARATION, EN_COURS, LIVRE, ANNULE)
-- ✅ API REST pour toutes les opérations
-- ✅ Configuration XML pure (Spring Core)
-- ✅ Validation des données métier
-- ✅ Gestion des transactions déclaratives
-
----
-
-## 🛠 Technologies
-
-### Backend
-- **Java 17**
-- **Spring Framework 5.3.31** (Core, Context, TX, ORM, Web MVC)
-- **Spring Data JPA 2.7.18**
-- **Hibernate 5.6.15.Final** (JPA Provider)
-- **MySQL 8.0** (Base de données)
-- **Maven** (Gestion des dépendances)
-
-### Outils
-- **Lombok** (Réduction du code boilerplate)
-- **Jackson** (Sérialisation/Désérialisation JSON)
-- **Tomcat 7** (Serveur d'application)
-- **Apidog** (Tests API REST)
-
----
 
 ## 📊 Diagramme de Classes UML
 
@@ -117,29 +39,6 @@ Le diagramme ci-dessous illustre la structure complète du système avec les ent
 **StatutColis (Enum)**
 - Énumération des statuts possibles d'un colis
 - Valeurs : PREPARATION, EN_COURS, LIVRE, ANNULE
-
-#### Relations
-
-\`\`\`
-Livreur "1" ←──→ "0..*" Colis
-\`\`\`
-
-- **Cardinalité** : Un livreur peut avoir zéro ou plusieurs colis
-- **Type** : Bidirectionnelle (navigable des deux côtés)
-- **Cascade** : Les opérations sur Livreur peuvent se propager aux Colis
-- **Lazy Loading** : Les colis sont chargés à la demande
-
-
-
-### Responsabilités des Couches
-
-| Couche | Responsabilité | Technologies |
-|--------|----------------|--------------|
-| **Presentation** | Gestion des requêtes HTTP, sérialisation JSON | Spring MVC, Jackson |
-| **Métier** | Logique applicative, validation, transactions | Spring Core, Services |
-| **Accès Données** | Opérations CRUD, requêtes JPQL | Spring Data JPA, DAOs |
-| **Persistance** | Mapping objet-relationnel, gestion sessions | Hibernate, JPA |
-| **Base de Données** | Stockage persistant des données | MySQL |
 
 ---
 
@@ -500,93 +399,6 @@ Content-Type: application/json
 \`\`\`
 
 **Réponse attendue** : `201 Created`
-
-### Captures d'écran Apidog
-
-La capture d'écran ci-dessous montre l'interface Apidog avec tous les endpoints configurés :
-
-![Apidog Interface](view/Api-Documentation.png)
-
----
-
-## 📁 Structure du Projet
-
-\`\`\`
-smart_delivry_management/
-│
-├── src/
-│   ├── main/
-│   │   ├── java/org/example/smart_delivry/
-│   │   │   ├── controller/              # Contrôleurs REST
-│   │   │   │   ├── LivreurController.java
-│   │   │   │   └── ColisController.java
-│   │   │   │
-│   │   │   ├── service/                 # Services métier
-│   │   │   │   ├── LivreurService.java
-│   │   │   │   ├── ColisService.java
-│   │   │   │   └── DeliveryValidator.java
-│   │   │   │
-│   │   │   ├── dao/                     # DAOs
-│   │   │   │   ├── LivreurDao.java
-│   │   │   │   └── ColisDao.java
-│   │   │   │
-│   │   │   ├── entity/                  # Entités JPA
-│   │   │   │   ├── Livreur.java
-│   │   │   │   └── Colis.java
-│   │   │   │
-│   │   │   ├── enums/                   # Énumérations
-│   │   │   │   └── StatutColis.java
-│   │   │   │
-│   │   │   └── App.java                 # Classe principale
-│   │   │
-│   │   ├── resources/
-│   │   │   ├── META-INF/
-│   │   │   │   ├── persistence.xml      # Configuration JPA
-│   │   │   │   └── orm.xml              # Mappings JPA XML
-│   │   │   │
-│   │   │   └── applicationContext.xml   # Configuration Spring Core
-│   │   │
-│   │   └── webapp/
-│   │       └── WEB-INF/
-│   │           ├── web.xml              # Configuration Servlet
-│   │           └── dispatcher-servlet.xml  # Configuration Spring MVC
-│   │
-│   └── test/                            # Tests unitaires
-│
-├── view/                                # Ressources visuelles
-│   ├── diagramme_classe.png            # Diagramme UML
-│   └── Api-Documentation.png           # Capture Apidog
-│
-├── pom.xml                              # Dépendances Maven
-├── README.md                            # Ce fichier
-├── DIAGRAMME_CLASSES.md                # Documentation UML
-├── LANCEMENT_SERVEUR.md                # Guide de lancement
-└── EXEMPLES_API.md                     # Exemples d'utilisation
-\`\`\`
-
----
-
-## 🐛 Dépannage
-
-### Erreur : "Cannot find symbol: method builder()"
-**Cause** : Les entités utilisaient @Builder qui a été retiré  
-**Solution** : Utilisez les constructeurs et setters standards
-
-### Erreur : HTTP 400 lors de POST
-**Cause** : JSON invalide ou Content-Type manquant  
-**Solution** : Vérifiez le header `Content-Type: application/json` et la structure JSON
-
-### Erreur : HTTP 409 Conflict
-**Cause** : Violation de contrainte unique (ex: téléphone déjà existant)  
-**Solution** : Utilisez un numéro de téléphone différent
-
-### Erreur : LazyInitializationException
-**Cause** : Tentative d'accès à une collection lazy hors session  
-**Solution** : Le Hibernate5Module est configuré pour gérer ce cas
-
-### Erreur : "package jakarta.persistence does not exist"
-**Cause** : Mauvaise version de JPA (3.0+ au lieu de 2.2)  
-**Solution** : Utilisez `javax.persistence` avec Hibernate 5.x
 
 ---
 
